@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub RAW Link Converter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --bg-card: #1c2128;
+            --border-primary: #30363d;
+            --border-secondary: #484f58;
+            --border-accent: #58a6ff;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-purple: #bc8cff;
+            --accent-orange: #d29922;
+            --accent-red: #f85149;
+            --accent-cyan: #39d2c0;
+            --gradient-1: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
+            --gradient-2: linear-gradient(135deg, #3fb950 0%, #58a6ff 100%);
+            --gradient-3: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 40px rgba(88,166,255,0.15);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Animation */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                radial-gradient(circle at 25% 25%, rgba(88,166,255,0.03) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(188,140,255,0.03) 0%, transparent 50%);
+        }
+
+        .bg-grid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(48,54,61,0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(48,54,61,0.15) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        .floating-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatOrb 15s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(88,166,255,0.08);
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: rgba(188,140,255,0.06);
+            bottom: -80px;
+            left: -80px;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: rgba(63,185,80,0.05);
+            top: 50%;
+            left: 50%;
+            animation-delay: -10s;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        /* Main Container */
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            position: relative;
+        }
+
+        .logo-icon svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 20px rgba(88,166,255,0.3));
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .stat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .stat-dot.green { background: var(--accent-green); }
+        .stat-dot.blue { background: var(--accent-blue); }
+        .stat-dot.purple { background: var(--accent-purple); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* Main Card */
+        .main-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 16px;
+            padding: 36px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.8s ease 0.2s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            opacity: 0.8;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .input-section-title .icon {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-blue);
+        }
+
+        /* Input Group */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-primary);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(88,166,255,0.1), var(--shadow-glow);
+        }
+
+        .input-wrapper.error {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 4px rgba(248,81,73,0.1);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        .input-prefix {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            color: var(--text-muted);
+            border-left: 1px solid var(--border-primary);
+            background: var(--bg-tertiary);
+            height: 56px;
+            flex-shrink: 0;
+        }
+
+        .input-prefix svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        #rawLink {
+            width: 100%;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            background: transparent;
+            border: none;
+            outline: none;
+            direction: ltr;
+            text-align: left;
+        }
+
+        #rawLink::placeholder {
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .clear-btn {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+
+        .clear-btn:hover {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: white;
+        }
+
+        .clear-btn.show {
+            display: flex;
+        }
+
+        /* Error Message */
+        .error-message {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 12px 16px;
+            background: rgba(248,81,73,0.08);
+            border: 1px solid rgba(248,81,73,0.2);
+            border-radius: 10px;
+            color: var(--accent-red);
+            font-size: 0.88rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-message svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            flex: 1;
+            justify-content: center;
+            min-width: 200px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(88,166,255,0.35);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .btn-primary:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-primary);
+            color: var(--text-primary);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Paste button */
+        .btn-paste {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-primary);
+            padding: 14px 24px;
+        }
+
+        .btn-paste:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        /* Results Section */
+        .results-section {
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .results-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            display: none;
+        }
+
+        .results-card.show {
+            display: block;
+            animation: resultReveal 0.6s ease;
+        }
+
+        @keyframes resultReveal {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .results-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .results-header-title .check-icon {
+            width: 22px;
+            height: 22px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .results-header-title .check-icon svg {
+            width: 14px;
+            height: 14px;
+            color: white;
+        }
+
+        .results-body {
+            padding: 24px 28px;
+        }
+
+        /* Result Item */
+        .result-item {
+            margin-bottom: 20px;
+            animation: slideInResult 0.4s ease both;
+        }
+
+        .result-item:nth-child(1) { animation-delay: 0.1s; }
+        .result-item:nth-child(2) { animation-delay: 0.2s; }
+        .result-item:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes slideInResult {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .result-label .label-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .label-repo { color: var(--accent-orange); }
+        .label-file { color: var(--accent-purple); }
+        .label-info { color: var(--accent-cyan); }
+
+        .result-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .result-box:hover {
+            border-color: var(--border-secondary);
+        }
+
+        .result-link {
+            flex: 1;
+            padding: 14px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            text-decoration: none;
+            direction: ltr;
+            text-align: left;
+            word-break: break-all;
+            line-height: 1.5;
+            transition: color 0.2s ease;
+        }
+
+        .result-link:hover {
+            color: var(--accent-purple);
+        }
+
+        .copy-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 14px 18px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-right: 1px solid var(--border-primary);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: var(--border-primary);
+            color: var(--text-primary);
+        }
+
+        .copy-btn.copied {
+            color: var(--accent-green) !important;
+            background: rgba(63,185,80,0.1);
+        }
+
+        .copy-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Extracted Info */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .info-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            padding: 14px 16px;
+            transition: all 0.2s ease;
+        }
+
+        .info-card:hover {
+            border-color: var(--border-secondary);
+        }
+
+        .info-card-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-card-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        /* History Section */
+        .history-section {
+            margin-top: 24px;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .history-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 16px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .history-card.show {
+            display: block;
+        }
+
+        .history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .history-header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .history-clear-btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .history-clear-btn:hover {
+            background: rgba(248,81,73,0.1);
+            color: var(--accent-red);
+        }
+
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .history-item-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            direction: ltr;
+            text-align: left;
+            flex: 1;
+        }
+
+        .history-item-time {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* Scrollbar */
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: var(--border-primary);
+            border-radius: 3px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding-top: 48px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+
+        .footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer a:hover {
+            color: var(--accent-purple);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-lg);
+            z-index: 100;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-green);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 0.95rem;
+            }
+
+            .main-card {
+                padding: 24px 20px;
+            }
+
+            .stats-bar {
+                gap: 16px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-primary {
+                min-width: unset;
+            }
+
+            .results-body {
+                padding: 20px;
+            }
+
+            .results-header {
+                padding: 16px 20px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .input-prefix {
+                display: none;
+            }
+        }
+
+        /* Loading state */
+        .btn-primary.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .btn-primary.loading .btn-text {
+            opacity: 0;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            position: absolute;
+        }
+
+        .btn-primary.loading .spinner {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Keyboard shortcut hint */
+        .shortcut-hint {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 12px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        kbd {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 5px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+        }
+
+        /* Batch mode toggle */
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            right: 2px;
+            bottom: 2px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: rgba(88,166,255,0.2);
+            border-color: var(--accent-blue);
+        }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(-20px);
+            background: var(--accent-blue);
+        }
+
+        .toggle-label {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        #batchInput {
+            display: none;
+            width: 100%;
+            min-height: 120px;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            border: 2px solid var(--border-primary);
+            border-radius: 12px;
+            outline: none;
+            resize: vertical;
+            direction: ltr;
+            text-align: left;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        #batchInput:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(88,166,255,0.1);
+        }
+
+        #batchInput.show {
+            display: block;
+        }
+
+        #batchInput::placeholder {
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .single-input.hidden {
+            display: none;
+        }
+
+        /* Batch Results */
+        .batch-results {
+            display: none;
+        }
+
+        .batch-results.show {
+            display: block;
+        }
+
+        .batch-result-item {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-primary);
+            animation: slideInResult 0.4s ease both;
+        }
+
+        .batch-result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .batch-result-source {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            direction: ltr;
+            text-align: left;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+    <div class="floating-orb orb-3"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--accent-blue)">
+                        <path d="M9 12h6m-3-3v6m-7.5 3.75A2.25 2.25 0 016.75 21h10.5A2.25 2.25 0 0019.5 18.75V5.25A2.25 2.25 0 0017.25 3h-10.5A2.25 2.25 0 004.5 5.25v13.5z" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M7.5 3v18M4.5 7.5h3M4.5 12h3M4.5 16.5h3" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+                    </svg>
+                </div>
+            </div>
+            <h1>GitHub RAW Converter</h1>
+            <p>حوّل روابط GitHub الخام إلى روابط المستودع والملف فوراً</p>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-dot green"></span>
+                    تحويل فوري
+                </div>
+                <div class="stat-item">
+                    <span class="stat-dot blue"></span>
+                    بدون خادم
+                </div>
+                <div class="stat-item">
+                    <span class="stat-dot purple"></span>
+                    مجاني بالكامل
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Input Card -->
+        <div class="main-card">
+            <!-- Batch Mode Toggle -->
+            <div class="mode-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="batchToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">تحويل جماعي (عدة روابط)</span>
+            </div>
+
+            <!-- Single Input -->
+            <div class="single-input" id="singleInput">
+                <div class="input-section-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+                    </svg>
+                    أدخل رابط RAW
+                </div>
+                <div class="input-group">
+                    <div class="input-wrapper" id="inputWrapper">
+                        <span class="input-prefix">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                        </span>
+                        <input
+                            type="url"
+                            id="rawLink"
+                            placeholder="https://raw.githubusercontent.com/user/repo/branch/path/file.ext"
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                    </div>
+                    <button class="clear-btn" id="clearBtn" title="مسح">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Batch Input -->
+            <textarea
+                id="batchInput"
+                placeholder="ألصق عدة روابط RAW هنا (كل رابط في سطر جديد)..."
+            ></textarea>
+
+            <!-- Error Message -->
+            <div class="error-message" id="errorMsg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span id="errorText">الرابط غير صالح</span>
+            </div>
+
+            <!-- Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-primary" id="convertBtn" onclick="handleConvert()">
+                    <div class="spinner"></div>
+                    <svg class="btn-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+                    </svg>
+                    <span class="btn-text">تحويل الرابط</span>
+                </button>
+                <button class="btn btn-paste" onclick="pasteFromClipboard()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                    </svg>
+                    لصق
+                </button>
+            </div>
+
+            <div class="shortcut-hint">
+                اضغط <kbd>Enter</kbd> للتحويل أو <kbd>Ctrl</kbd>+<kbd>V</kbd> للصق
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="results-section">
+            <!-- Single Results -->
+            <div class="results-card" id="resultsCard">
+                <div class="results-header">
+                    <div class="results-header-title">
+                        <div class="check-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        تم التحويل بنجاح
+                    </div>
+                </div>
+                <div class="results-body">
+                    <!-- Repository Link -->
+                    <div class="result-item">
+                        <div class="result-label">
+                            <svg class="label-icon label-repo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                            </svg>
+                            <span class="label-repo">رابط المستودع</span>
+                        </div>
+                        <div class="result-box">
+                            <button class="copy-btn" onclick="copyToClipboard(this, 'repoLink')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                نسخ
+                            </button>
+                            <a href="#" target="_blank" class="result-link" id="repoLink">—</a>
+                        </div>
+                    </div>
+
+                    <!-- File Link -->
+                    <div class="result-item">
+                        <div class="result-label">
+                            <svg class="label-icon label-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                            <span class="label-file">رابط الملف</span>
+                        </div>
+                        <div class="result-box">
+                            <button class="copy-btn" onclick="copyToClipboard(this, 'fileLink')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                نسخ
+                            </button>
+                            <a href="#" target="_blank" class="result-link" id="fileLink">—</a>
+                        </div>
+                    </div>
+
+                    <!-- Extracted Info -->
+                    <div class="result-item">
+                        <div class="result-label">
+                            <svg class="label-icon label-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="16" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                            <span class="label-info">المعلومات المستخرجة</span>
+                        </div>
+                        <div class="info-grid" id="infoGrid">
+                            <!-- Filled dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch Results -->
+            <div class="results-card batch-results" id="batchResults">
+                <div class="results-header">
+                    <div class="results-header-title">
+                        <div class="check-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <span id="batchCount">تم تحويل 0 روابط</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyAllBatch()" style="border:1px solid var(--border-primary); border-radius:8px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                        </svg>
+                        نسخ الكل
+                    </button>
+                </div>
+                <div class="results-body" id="batchResultsBody">
+                    <!-- Filled dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="history-section">
+            <div class="history-card" id="historyCard">
+                <div class="history-header">
+                    <div class="history-header-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        السجل
+                    </div>
+                    <button class="history-clear-btn" onclick="clearHistory()">مسح السجل</button>
+                </div>
+                <div class="history-list" id="historyList">
+                    <!-- Filled dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>GitHub RAW Link Converter — v1.0</p>
+            <div class="footer-links">
+                <span>مبني بـ ❤️ بدون أي خادم</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"/>
+        </svg>
+        <span id="toastText">تم النسخ!</span>
+    </div>
+
+    <script>
+        // History management
+        let history = JSON.parse(localStorage.getItem('rawConverterHistory') || '[]');
+
+        // DOM Elements
+        const rawLinkInput = document.getElementById('rawLink');
+        const inputWrapper = document.getElementById('inputWrapper');
+        const clearBtn = document.getElementById('clearBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const errorText = document.getElementById('errorText');
+        const resultsCard = document.getElementById('resultsCard');
+        const repoLinkEl = document.getElementById('repoLink');
+        const fileLinkEl = document.getElementById('fileLink');
+        const infoGrid = document.getElementById('infoGrid');
+        const batchToggle = document.getElementById('batchToggle');
+        const singleInput = document.getElementById('singleInput');
+        const batchInput = document.getElementById('batchInput');
+        const batchResults = document.getElementById('batchResults');
+        const batchResultsBody = document.getElementById('batchResultsBody');
+        const batchCount = document.getElementById('batchCount');
+
+        // Initialize
+        renderHistory();
+
+        // Event Listeners
+        rawLinkInput.addEventListener('input', () => {
+            clearBtn.classList.toggle('show', rawLinkInput.value.length > 0);
+            hideError();
+        });
+
+        rawLinkInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleConvert();
+            }
+        });
+
+        batchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                handleConvert();
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            rawLinkInput.value = '';
+            clearBtn.classList.remove('show');
+            hideError();
+            resultsCard.classList.remove('show');
+        });
+
+        batchToggle.addEventListener('change', () => {
+            const isBatch = batchToggle.checked;
+            if (isBatch) {
+                singleInput.classList.add('hidden');
+                batchInput.classList.add('show');
+            } else {
+                singleInput.classList.remove('hidden');
+                batchInput.classList.remove('show');
+            }
+            hideError();
+            resultsCard.classList.remove('show');
+            batchResults.classList.remove('show');
+        });
+
+        // Parse RAW URL
+        function parseRawUrl(url) {
+            url = url.trim();
+            const pattern = /^https?:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.+)$/;
+            const match = url.match(pattern);
+            if (!match) return null;
+
+            return {
+                user: match[1],
+                repo: match[2],
+                branch: match[3],
+                filePath: match[4],
+                repoUrl: `https://github.com/${match[1]}/${match[2]}`,
+                fileUrl: `https://github.com/${match[1]}/${match[2]}/blob/${match[3]}/${match[4]}`
+            };
+        }
+
+        // Handle conversion
+        function handleConvert() {
+            const isBatch = batchToggle.checked;
+
+            if (isBatch) {
+                handleBatchConvert();
+            } else {
+                handleSingleConvert();
+            }
+        }
+
+        function handleSingleConvert() {
+            const url = rawLinkInput.value.trim();
+
+            if (!url) {
+                showError('يرجى إدخال رابط RAW');
+                return;
+            }
+
+            const result = parseRawUrl(url);
+
+            if (!result) {
+                showError('الرابط غير صالح. يجب أن يبدأ بـ raw.githubusercontent.com');
+                inputWrapper.classList.add('error');
+                setTimeout(() => inputWrapper.classList.remove('error'), 600);
+                return;
+            }
+
+            hideError();
+            batchResults.classList.remove('show');
+
+            // Update results
+            repoLinkEl.href = result.repoUrl;
+            repoLinkEl.textContent = result.repoUrl;
+
+            fileLinkEl.href = result.fileUrl;
+            fileLinkEl.textContent = result.fileUrl;
+
+            // Build info grid
+            const fileName = result.filePath.split('/').pop();
+            const fileExt = fileName.includes('.') ? fileName.split('.').pop() : '—';
+
+            infoGrid.innerHTML = `
+                <div class="info-card">
+                    <div class="info-card-label">المستخدم</div>
+                    <div class="info-card-value">${escapeHtml(result.user)}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">المستودع</div>
+                    <div class="info-card-value">${escapeHtml(result.repo)}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">الفرع</div>
+                    <div class="info-card-value">${escapeHtml(result.branch)}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">اسم الملف</div>
+                    <div class="info-card-value">${escapeHtml(fileName)}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">الامتداد</div>
+                    <div class="info-card-value">.${escapeHtml(fileExt)}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">المسار</div>
+                    <div class="info-card-value">${escapeHtml(result.filePath)}</div>
+                </div>
+            `;
+
+            resultsCard.classList.add('show');
+
+            // Add to history
+            addToHistory(url);
+
+            // Scroll to results
+            setTimeout(() => {
+                resultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        function handleBatchConvert() {
+            const text = batchInput.value.trim();
+            if (!text) {
+                showError('يرجى إدخال رابط واحد على الأقل');
+                return;
+            }
+
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const results = [];
+            const errors = [];
+
+            lines.forEach((line, index) => {
+                const parsed = parseRawUrl(line);
+                if (parsed) {
+                    results.push({ source: line, ...parsed });
+                } else {
+                    errors.push({ line: index + 1, url: line });
+                }
+            });
+
+            if (results.length === 0) {
+                showError(`لم يتم العثور على روابط صالحة. ${errors.length} رابط غير صالح.`);
+                return;
+            }
+
+            hideError();
+            resultsCard.classList.remove('show');
+
+            // Render batch results
+            batchCount.textContent = `تم تحويل ${results.length} رابط${errors.length > 0 ? ` (${errors.length} خطأ)` : ''}`;
+
+            batchResultsBody.innerHTML = results.map((r, i) => `
+                <div class="batch-result-item" style="animation-delay: ${i * 0.1}s">
+                    <div class="batch-result-source">${escapeHtml(r.source)}</div>
+                    <div class="result-item" style="margin-bottom:12px">
+                        <div class="result-label">
+                            <span class="label-repo" style="font-size:0.8rem">المستودع</span>
+                        </div>
+                        <div class="result-box">
+                            <button class="copy-btn" onclick="copyText(this, '${escapeAttr(r.repoUrl)}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                            </button>
+                            <a href="${escapeAttr(r.repoUrl)}" target="_blank" class="result-link">${escapeHtml(r.repoUrl)}</a>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">
+                            <span class="label-file" style="font-size:0.8rem">الملف</span>
+                        </div>
+                        <div class="result-box">
+                            <button class="copy-btn" onclick="copyText(this, '${escapeAttr(r.fileUrl)}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                            </button>
+                            <a href="${escapeAttr(r.fileUrl)}" target="_blank" class="result-link">${escapeHtml(r.fileUrl)}</a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            batchResults.classList.add('show');
+
+            // Add all to history
+            results.forEach(r => addToHistory(r.source));
+
+            setTimeout(() => {
+                batchResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        // Copy functions
+        function copyToClipboard(btn, elementId) {
+            const text = document.getElementById(elementId).textContent;
+            copyText(btn, text);
+        }
+
+        function copyText(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                btn.classList.add('copied');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    تم!
+                `;
+                showToast('تم النسخ إلى الحافظة!');
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = originalHTML;
+                }, 2000);
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('تم النسخ!');
+            });
+        }
+
+        function copyAllBatch() {
+            const links = batchResultsBody.querySelectorAll('.result-link');
+            const allText = Array.from(links).map(l => l.textContent).join('\n');
+            navigator.clipboard.writeText(allText).then(() => {
+                showToast('تم نسخ جميع الروابط!');
+            });
+        }
+
+        // Paste from clipboard
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                const isBatch = batchToggle.checked;
+                if (isBatch) {
+                    batchInput.value = text;
+                } else {
+                    rawLinkInput.value = text;
+                    clearBtn.classList.toggle('show', text.length > 0);
+                }
+                showToast('تم اللصق!');
+            } catch (err) {
+                showToast('لا يمكن الوصول للحافظة');
+            }
+        }
+
+        // Error handling
+        function showError(msg) {
+            errorText.textContent = msg;
+            errorMsg.classList.add('show');
+        }
+
+        function hideError() {
+            errorMsg.classList.remove('show');
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastText').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // History management
+        function addToHistory(url) {
+            const exists = history.findIndex(h => h.url === url);
+            if (exists > -1) {
+                history.splice(exists, 1);
+            }
+            history.unshift({
+                url: url,
+                time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+            });
+            if (history.length > 10) history.pop();
+            localStorage.setItem('rawConverterHistory', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const historyCard = document.getElementById('historyCard');
+            const historyList = document.getElementById('historyList');
+
+            if (history.length === 0) {
+                historyCard.classList.remove('show');
+                return;
+            }
+
+            historyCard.classList.add('show');
+            historyList.innerHTML = history.map(h => `
+                <div class="history-item" onclick="useHistoryItem('${escapeAttr(h.url)}')">
+                    <span class="history-item-text">${escapeHtml(h.url)}</span>
+                    <span class="history-item-time">${h.time}</span>
+                </div>
+            `).join('');
+        }
+
+        function useHistoryItem(url) {
+            const isBatch = batchToggle.checked;
+            if (isBatch) {
+                batchInput.value = url;
+            } else {
+                rawLinkInput.value = url;
+                clearBtn.classList.add('show');
+            }
+            handleConvert();
+        }
+
+        function clearHistory() {
+            history = [];
+            localStorage.removeItem('rawConverterHistory');
+            renderHistory();
+            showToast('تم مسح السجل');
+        }
+
+        // Utility
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function escapeAttr(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        // Keyboard shortcut: Ctrl+V auto-paste and convert
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                handleConvert();
+            }
+        });
+    </script>
+</body>
+</html>
