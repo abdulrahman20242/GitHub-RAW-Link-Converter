@@ -9,6 +9,11 @@
 [![CSS](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Now-58a6ff?style=for-the-badge&logo=netlify&logoColor=white)](https://github-raw-link-converter.netlify.app)
+
+<br/>
+
+🌍 **Live Demo / تجربة مباشرة:** [github-raw-link-converter.netlify.app](https://github-raw-link-converter.netlify.app)
 
 <br/>
 
@@ -68,7 +73,7 @@ No installation needed! Simply:
 git clone https://github.com/abdulrahman20242/github-raw-link-converter.git
 ```
 
-Then open `GitHub RAW Link Converter.htmlL` directly in your browser.
+Then open `GitHub RAW Link Converter.html` directly in your browser.
 
 ---
 
@@ -120,7 +125,7 @@ Press **Convert** and all results appear at once with a **Copy All** button.
 ```
 github-raw-link-converter/
 │
-├── GitHub RAW Link Converter.htmlL   # Full tool (Single-file app)
+├── GitHub RAW Link Converter.html   # Full tool (Single-file app)
 ├── README.md                        # This file
 └── preview.png                      # Preview image (optional)
 ```
@@ -197,7 +202,7 @@ This project is licensed under the [MIT License](LICENSE) — free to use, modif
 git clone https://github.com/abdulrahman20242/github-raw-link-converter.git
 ```
 
-ثم افتح ملف `GitHub RAW Link Converter.htmlL` مباشرة في المتصفح.
+ثم افتح ملف `GitHub RAW Link Converter.html` مباشرة في المتصفح.
 
 ---
 
@@ -249,7 +254,7 @@ https://raw.githubusercontent.com/user/repo/main/app.js
 ```
 github-raw-link-converter/
 │
-├── GitHub RAW Link Converter.htmlL   # ملف الأداة الكامل (Single-file app)
+├── GitHub RAW Link Converter.html   # ملف الأداة الكامل (Single-file app)
 ├── README.md                        # هذا الملف
 └── preview.png                      # صورة المعاينة (اختياري)
 ```
