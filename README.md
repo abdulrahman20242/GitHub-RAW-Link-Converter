@@ -68,7 +68,7 @@ No installation needed! Simply:
 git clone https://github.com/abdulrahman20242/github-raw-link-converter.git
 ```
 
-Then open `GitHub_RAW_Link_Converter.HTML` directly in your browser.
+Then open `GitHub RAW Link Converter.htmlL` directly in your browser.
 
 ---
 
@@ -120,7 +120,7 @@ Press **Convert** and all results appear at once with a **Copy All** button.
 ```
 github-raw-link-converter/
 │
-├── GitHub_RAW_Link_Converter.HTML   # Full tool (Single-file app)
+├── GitHub RAW Link Converter.htmlL   # Full tool (Single-file app)
 ├── README.md                        # This file
 └── preview.png                      # Preview image (optional)
 ```
@@ -197,7 +197,7 @@ This project is licensed under the [MIT License](LICENSE) — free to use, modif
 git clone https://github.com/abdulrahman20242/github-raw-link-converter.git
 ```
 
-ثم افتح ملف `GitHub_RAW_Link_Converter.HTML` مباشرة في المتصفح.
+ثم افتح ملف `GitHub RAW Link Converter.htmlL` مباشرة في المتصفح.
 
 ---
 
@@ -249,7 +249,7 @@ https://raw.githubusercontent.com/user/repo/main/app.js
 ```
 github-raw-link-converter/
 │
-├── GitHub_RAW_Link_Converter.HTML   # ملف الأداة الكامل (Single-file app)
+├── GitHub RAW Link Converter.htmlL   # ملف الأداة الكامل (Single-file app)
 ├── README.md                        # هذا الملف
 └── preview.png                      # صورة المعاينة (اختياري)
 ```
